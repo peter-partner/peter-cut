@@ -103,7 +103,7 @@ def _run_job(job_id: str, req: ProcessRequest):
             output_path=output_path,
             transition_style=req.transition_style,
             transition_sound=req.transition_sound,
-            assets_dir=settings.assets_dir / "sounds",
+            assets_dir=str(settings.assets_dir / "sounds"),
             progress_callback=lambda pct, msg: progress(55 + int(pct * 0.45), msg),
         )
 

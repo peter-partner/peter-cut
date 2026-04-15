@@ -1,0 +1,36 @@
+services:
+  # Backend — Python + FastAPI + FFmpeg + Whisper
+  - type: web
+    name: autocut-backend
+    runtime: docker
+    dockerfilePath: ./Dockerfile.backend
+    plan: starter
+    region: singapore
+    healthCheckPath: /health
+    envVars:
+      - key: WHISPER_MODEL
+        value: base
+      - key: CORS_ORIGINS
+        value: '["https://autocut-frontend.onrender.com"]'
+    disk:
+      name: autocut-storage
+      mountPath: /app/uploads
+      sizeGB: 10
+
+  # Frontend — React static site
+  - type: web
+    name: autocut-frontend
+    runtime: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    routes:
+      - type: rewrite
+        source: /api/*
+        destination: https://autocut-backend.onrender.com/api/*
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
